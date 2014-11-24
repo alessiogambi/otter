@@ -7,6 +7,7 @@ from autoscale.models.response.autoscale_response import (Group, Config,
                                                           Policies, Webhooks,
                                                           Audit)
 from autoscale.models.response.limits_response import Limits
+from autoscale.models.response.autoscale_response import RackConnectLBPools
 from autoscale.models.request.autoscale_requests import (
     Group_Request, Policy_Request, Webhook_Request, Config_Request,
     ScalingGroup_Request, Update_Policy_Request, Update_Webhook_Request,
@@ -15,6 +16,23 @@ from autoscale.models.request.autoscale_requests import (
 from autoscale.models.lbaas import NodeList, LoadBalancer
 from cafe.engine.clients.rest import AutoMarshallingRestClient
 from urlparse import urlparse
+
+
+class RackConnectV3APIClient(AutoMarshallingRestClient):
+    """Client objects for all Rackconnect V3 API calls."""
+
+    def __init__(self, url, auth_token, serialize_format=None, deserialize_format=None):
+        super(RackConnectV3APIClient, self).__init__(serialize_format, deserialize_format)
+        self.url = url
+        self.auth_token = auth_token
+        self.default_headers['X-Auth-Token'] = auth_token
+        self.default_headers['Content-Type'] = 'application/%s' % (self.serialize_format,)
+        self.default_headers['Accept'] = 'application/%s' % (self.deserialize_format,)
+
+
+    def try_marshalling(self, url=None, requestslib_kwargs=None):
+        url=url or (self.url+"/load_balancer_pools")
+        return self.request('GET', url, response_entity_type=RackConnectLBPools)
 
 
 class AutoscalingAPIClient(AutoMarshallingRestClient):

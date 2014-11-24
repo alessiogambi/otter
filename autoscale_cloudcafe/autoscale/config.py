@@ -3,6 +3,11 @@ Define autoscale config values
 """
 from cloudcafe.common.models.configuration import ConfigSectionInterface
 
+# STEP 2
+#
+# Now that you have mimic and otter API endpoints understood,
+# this file is used to parse out your new fields for CloudCafe's config reader classes.
+# The fixture will use this, among other things.
 
 class AutoscaleConfig(ConfigSectionInterface):
     """
@@ -369,3 +374,14 @@ class AutoscaleConfig(ConfigSectionInterface):
         no access for autoscale.
         """
         return self.get('autoscale_nno_lno_aa')
+
+    @property
+    def rcv3_endpoint_name(self):
+        """Endpoint URL for Rackconnect V3 API."""
+        return self.get('rcv3_endpoint_name')
+
+    @property
+    def rcv3_region_override(self):
+        """Override for Rackconnect V3 region."""
+        return self.get('rcv3_region_override')
+

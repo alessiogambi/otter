@@ -431,3 +431,33 @@ class HistoryEvent(AutoMarshallingModel):
         # TODO: If the event type is a request event, convert the value associated with the 'data' key
         # into a request object based on event_type
         return event
+
+
+class RackConnectLBPools(AutoMarshallingModel):
+    """
+    Works for RackConnect V3 Load Balancer Pools (note plural!)
+    See also RackConnectLBPool if you need to touch a single instance.
+    """
+
+    def __init__(self, **kwargs):
+        super(RackConnectLBPools, self).__init__()
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    @classmethod
+    def _json_to_obj(cls, serialized_str):
+        """
+        Returns an instance of a RackConnectLBPools based on the json serialized_str
+        passed in.
+        """
+        json_dict = json.loads(serialized_str)
+        return cls._dict_to_obj(json_dict)
+
+    @classmethod
+    def _dict_to_obj(cls, groups_dict):
+        """
+        Helper method to turn dictionary into RackConnectLBPools instance.
+        """
+        groups = RackConnectLBPools(**groups_dict)
+        return groups
+

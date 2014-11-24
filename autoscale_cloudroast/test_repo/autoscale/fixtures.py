@@ -7,7 +7,7 @@ from cloudcafe.common.resources import ResourcePool
 from cloudcafe.common.tools.datagen import rand_name
 from autoscale.config import AutoscaleConfig
 from cloudcafe.auth.config import UserAuthConfig, UserConfig
-from autoscale.client import AutoscalingAPIClient, LbaasAPIClient
+from autoscale.client import AutoscalingAPIClient, LbaasAPIClient, RackConnectV3APIClient
 from cloudcafe.auth.provider import AuthProvider
 from cloudcafe.compute.servers_api.client import ServersClient
 from autoscale.otter_constants import OtterConstants
@@ -16,6 +16,10 @@ import os
 import time
 from functools import partial
 
+# STEP 3 -- add RCV3 discovery and initialization code here for test case classes to depend on.
+# Like....
+
+# STEP 4 --- write the client class.  This can be cowritten with tests.
 
 class AutoscaleFixture(BaseTestFixture):
 
@@ -39,11 +43,16 @@ class AutoscaleFixture(BaseTestFixture):
             cls.autoscale_config.server_endpoint_name)
         load_balancer_service = access_data.get_service(
             cls.autoscale_config.load_balancer_endpoint_name)
+        rcv3_service = access_data.get_service(
+            cls.autoscale_config.rcv3_endpoint_name)
         server_url = server_service.get_endpoint(
             cls.autoscale_config.server_region_override or
             cls.autoscale_config.region).public_url
         lbaas_url = load_balancer_service.get_endpoint(
             cls.autoscale_config.lbaas_region_override or
+            cls.autoscale_config.region).public_url
+        rcv3_url = rcv3_service.get_endpoint(
+            cls.autoscale_config.rcv3_region_override or
             cls.autoscale_config.region).public_url
 
         cls.tenant_id = cls.autoscale_config.tenant_id
@@ -67,6 +76,7 @@ class AutoscaleFixture(BaseTestFixture):
         cls.lbaas_client = LbaasAPIClient(
             lbaas_url, access_data.token.id_,
             'json', 'json')
+	cls.rcv3_client = RackConnectV3APIClient(rcv3_url, access_data.token.id_, 'json', 'json')
         cls.autoscale_behaviors = AutoscaleBehaviors(cls.autoscale_config,
                                                      cls.autoscale_client)
         cls.gc_name = cls.autoscale_config.gc_name
@@ -116,6 +126,8 @@ class AutoscaleFixture(BaseTestFixture):
         cls.non_autoscale_username = cls.autoscale_config.non_autoscale_username
         cls.non_autoscale_password = cls.autoscale_config.non_autoscale_password
         cls.non_autoscale_tenant = cls.autoscale_config.non_autoscale_tenant
+
+	cls.rcv3_url = rcv3_url
 
     def validate_headers(self, headers):
         """
