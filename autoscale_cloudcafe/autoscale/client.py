@@ -5,9 +5,9 @@ from autoscale.models.response.autoscale_response import (Group, Config,
                                                           Policy, Webhook,
                                                           ScalingGroup, Groups,
                                                           Policies, Webhooks,
-                                                          Audit)
+                                                          Audit,
+                                                          RackConnectLBPools)
 from autoscale.models.response.limits_response import Limits
-from autoscale.models.response.autoscale_response import RackConnectLBPools
 from autoscale.models.request.autoscale_requests import (
     Group_Request, Policy_Request, Webhook_Request, Config_Request,
     ScalingGroup_Request, Update_Policy_Request, Update_Webhook_Request,
@@ -31,7 +31,7 @@ class RackConnectV3APIClient(AutoMarshallingRestClient):
 
 
     def try_marshalling(self, url=None, requestslib_kwargs=None):
-        url=url or (self.url+"/load_balancer_pools")
+        url = url or (self.url+"/load_balancer_pools")
         return self.request('GET', url, response_entity_type=RackConnectLBPools)
 
 
